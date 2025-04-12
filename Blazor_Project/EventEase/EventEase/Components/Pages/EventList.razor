@@ -1,0 +1,55 @@
+@page "/event-list"
+@using EventEase.Components.Shared
+@using EventEase.Shared.Models
+@attribute [StreamRendering]
+@inject NavigationManager NavigationManager
+
+<PageTitle>Event List</PageTitle>
+
+<h1>Event List</h1>
+
+<p>Here are some upcoming events:</p>
+
+@if (eventsList == null) 
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    @foreach (var eventM in eventsList)
+    {
+        <EventCard eventModel="eventM" />
+    }
+}
+
+@code {
+    private List<EventModel>? eventsList; // Simulated data source
+
+    private void NavigateToEventDetails(int eventId)
+    {
+        // Navigate to the event details page
+        NavigationManager.NavigateTo($"event-details/{eventId}");
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Simulate asynchronous loading to demonstrate streaming rendering
+        await Task.Delay(500);
+
+        // Fetch event list (simulated)
+        eventsList = await FetchEventListAsync();
+    }
+
+    private async Task<List<EventModel>> FetchEventListAsync()
+    {
+        // Simulate fetching event list from a data source
+        await Task.Delay(1000); // Simulate network delay
+
+        return new List<EventModel>
+        {
+            new EventModel(1, "Sample Event 1", DateTime.Now.AddDays(7), "Location 1", "Description 1"),
+            new EventModel(2, "Sample Event 2", DateTime.Now.AddDays(14), "Location 2"),
+            new EventModel(3, "Sample Event 3", DateTime.Now.AddDays(21), "Location 3", "Description 3"),
+        };
+    }
+}

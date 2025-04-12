@@ -1,0 +1,30 @@
+@using EventEase.Shared.Models
+@rendermode InteractiveServer
+@inject NavigationManager Navigation
+
+<div class="event-card">
+    <h3>@eventModel.Name</h3>
+    <p>Date: @eventModel.Date.ToString("dd MMM yyyy")</p>
+    <p>Location: @eventModel.Location</p>
+    <span>
+        <button class="btn btn-primary" @onclick="NavigateToEventDetails">View Details</button>
+        <button class="btn btn-secondary" @onclick="NavigateToEventRegistration">Register</button>
+    </span>
+</div>
+
+@code {
+    [Parameter]
+    public EventModel eventModel { get; set; } = new EventModel();
+
+    private void NavigateToEventDetails()
+    {
+        Console.WriteLine($"Navigating to event details for Event ID: {eventModel.Id}");
+        Navigation.NavigateTo($"event-details/{eventModel.Id}", true);
+    }
+
+    private void NavigateToEventRegistration()
+    {
+        Console.WriteLine($"Navigating to event registration for Event ID: {eventModel.Id}");
+        Navigation.NavigateTo($"event-registration/{eventModel.Id}", true);
+    }
+}

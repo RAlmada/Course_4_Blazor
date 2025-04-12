@@ -1,0 +1,66 @@
+@page "/event-details"
+@page "/event-details/{eventId:int}"
+@attribute [StreamRendering]
+
+<PageTitle>Event Details</PageTitle>
+
+@if (eventDetails == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="event-details">
+        <h1>@eventDetails.Name</h1>
+        <p>Date: @eventDetails.Date.ToString("dd MMM yyyy")</p>
+        <p>Location: @eventDetails.Location</p>
+        <p>Description: @eventDetails.Description</p>
+    </div>
+}
+
+
+@code {
+    [Parameter]
+    public int? eventId { get; set; }
+
+    private EventDetailsModel? eventDetails;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Simulate asynchronous loading to demonstrate streaming rendering
+        await Task.Delay(500);
+
+        if (eventId == null)
+        {
+            // Handle the case where EventId is not provided (e.g., redirect to a default page)
+            eventId = Random.Shared.Next(1, 1000);
+        }
+
+        // Fetch event details based on the EventId
+        eventDetails = await FetchEventDetailsAsync(eventId.Value);
+    }
+
+    private async Task<EventDetailsModel?> FetchEventDetailsAsync(int eventId)
+    {
+        // Simulate fetching event details from a data source
+        await Task.Delay(1000); // Simulate network delay
+
+        return new EventDetailsModel
+        {
+            Id = eventId,
+            Name = $"Sample Event - {eventId}",
+            Date = DateTime.Now.AddDays(7),
+            Location = "Sample Location",
+            Description = "This is a sample event description."
+        };
+    }
+
+    private class EventDetailsModel
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public DateTime Date { get; set; } = DateTime.Now;
+        public string Location { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+    }
+}
