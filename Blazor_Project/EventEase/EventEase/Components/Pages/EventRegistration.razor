@@ -1,9 +1,16 @@
-@page "/event-registration/{eventId:int}"
+@page "/event-registration/{eventId:int?}"
 
-<h1>Event Registration</h1>
-<p>Register for Event ID: @eventId</p>
+@if (eventId == null)
+{
+    <p><em>Invalid event ID.</em></p>
+}
+else
+{
+    <h1>Event Registration</h1>
+    <p>Register for Event ID: @eventId</p>
+}
 
 @code {
     [Parameter]
-    public int eventId { get; set; }
+    public int? eventId { get; set; }
 }

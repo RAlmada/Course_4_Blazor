@@ -1,5 +1,5 @@
-@page "/event-details"
-@page "/event-details/{eventId:int}"
+@page "/event-details/{eventId:int?}"
+@inject NavigationManager Navigation
 @attribute [StreamRendering]
 
 <PageTitle>Event Details</PageTitle>
@@ -18,7 +18,6 @@ else
     </div>
 }
 
-
 @code {
     [Parameter]
     public int? eventId { get; set; }
@@ -27,24 +26,22 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        // Simulate asynchronous loading to demonstrate streaming rendering
-        await Task.Delay(500);
+        await Task.Delay(500);   // Simulate asynchronous loading to demonstrate streaming rendering
 
         if (eventId == null)
         {
-            // Handle the case where EventId is not provided (e.g., redirect to a default page)
             eventId = Random.Shared.Next(1, 1000);
+            Navigation.NavigateTo($"/event-details/{eventId}", true);   // Handle the case where EventId is not provided (e.g., redirect to a default page)
+            return;
         }
 
-        // Fetch event details based on the EventId
-        eventDetails = await FetchEventDetailsAsync(eventId.Value);
+        eventDetails = await FetchEventDetailsAsync(eventId.Value);        // Fetch event details based on the EventId
     }
 
     private async Task<EventDetailsModel?> FetchEventDetailsAsync(int eventId)
     {
-        // Simulate fetching event details from a data source
-        await Task.Delay(1000); // Simulate network delay
-
+        await Task.Delay(1000);
+   // Simulate fetching event details from a data source
         return new EventDetailsModel
         {
             Id = eventId,
