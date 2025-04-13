@@ -46,6 +46,19 @@ else
     public int? eventId { get; set; }
 
     private RegistrationModel registrationModel = new RegistrationModel();
+
+    protected override void OnParametersSet()
+    {
+        if (eventId == null)
+        {
+            registrationModel = new RegistrationModel();
+        }
+        else
+        {
+            new RegistrationModel(DateTime.Now, eventId.HasValue ? eventId.Value : 0);
+        }
+    }
+
     private bool isRegistered = false;
 
     private void HandleValidSubmit()
