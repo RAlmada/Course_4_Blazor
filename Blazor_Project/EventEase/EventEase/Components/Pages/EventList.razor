@@ -1,6 +1,4 @@
 @page "/event-list"
-@using EventEase.Components.Shared
-@using EventEase.Shared.Models
 @rendermode InteractiveServer
 @attribute [StreamRendering]
 @inject NavigationManager NavigationManager
@@ -17,9 +15,11 @@
 }
 else
 {
-    <div style="height:65rem;overflow-y:scroll">
+    <div style="display: flex; flex-direction: column; height: 65rem; overflow-y: scroll;">
         <Virtualize Items="eventsList" Context="eventM" ItemSize="100" OverscanCount="2">
-            <EventCard eventModel="eventM" />
+            <div style="display: flex; flex-wrap: wrap; gap: 1rem; width: 100%;">
+                <EventCard eventModel="eventM" />
+            </div>
         </Virtualize>
     </div>
 }

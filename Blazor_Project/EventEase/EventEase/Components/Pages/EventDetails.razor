@@ -1,5 +1,6 @@
 @page "/event-details/{eventId:int?}"
 @inject NavigationManager Navigation
+@inject EventEase.Services.AttendanceService Attendance
 @attribute [StreamRendering]
 
 <PageTitle>Event Details</PageTitle>
@@ -15,6 +16,14 @@ else
         <p>Date: @eventDetails.Date.ToString("dd MMM yyyy")</p>
         <p>Location: @eventDetails.Location</p>
         <p>Description: @eventDetails.Description</p>
+
+        <h3>Attendees</h3>
+        <ul>
+            @foreach (var attendee in Attendance.GetAttendees(eventDetails.Id))
+            {
+                <li>@attendee</li>
+            }
+        </ul>
     </div>
 }
 
@@ -52,12 +61,5 @@ else
         };
     }
 
-    private class EventDetailsModel
-    {
-        public int Id { get; set; }
-        public string Name { get; set; } = string.Empty;
-        public DateTime Date { get; set; } = DateTime.Now;
-        public string Location { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
-    }
+    
 }

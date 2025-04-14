@@ -1,0 +1,39 @@
+@page "/login"
+@inject EventEase.Services.UserSessionService UserSessionService
+@inject NavigationManager NavigationManager
+@using EventEase.Shared.Models
+
+<h3>Login</h3>
+
+@if (UserSessionService.IsLoggedIn)
+{
+    <p class="text-success">Welcome, @UserSessionService.UserName!</p>
+}
+else
+{
+    <EditForm Model="loginModel" OnValidSubmit="HandleLogin">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="form-field">
+            <label for="username">Username:</label>
+            <InputText id="username" @bind-Value="loginModel.Username" class="form-control" />
+            <ValidationMessage For="@(() => loginModel.Username)" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Login</button>
+    </EditForm>
+}
+
+@code {
+    private LoginModel loginModel = new();
+
+    private void HandleLogin()
+    {
+        // Simulate user login and initialize session
+        UserSessionService.InitializeSession(Guid.NewGuid().ToString(), loginModel.Username);
+
+        Console.WriteLine($"User logged in: {UserSessionService.UserName}");
+        NavigationManager.NavigateTo("/event-list");
+    }
+}

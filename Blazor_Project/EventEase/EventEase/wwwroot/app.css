@@ -56,3 +56,12 @@ h1:focus {
     margin: 1rem;
     display: block;
 }
+
+.form-field {
+    margin: 1rem 0;
+    width: 33%;
+}
+
+.form-submit-btn {
+    margin: 0.5rem 0;
+}

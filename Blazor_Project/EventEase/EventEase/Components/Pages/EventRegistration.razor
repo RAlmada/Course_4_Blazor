@@ -1,9 +1,19 @@
 @page "/event-registration/{eventId:int?}"
-@using EventEase.Shared.Models
+@inject IJSRuntime JSRuntime
+@inject EventEase.Services.UserSessionService UserSessionService
+@inject EventEase.Services.AttendanceService AttendanceService
 
 @if (eventId == null)
 {
     <p><em>Invalid event ID.</em></p>
+}
+else if (isRegistered)
+{
+    <p class="text-success" style="margin: 1rem 0;">Thank you for registering, @registrationModel.Name!</p>
+}
+else if (hasAlreadyRegistered)
+{
+    <p class="text-warning">You have already registered for this event.</p>
 }
 else
 {
@@ -14,31 +24,26 @@ else
         <DataAnnotationsValidator />
         <ValidationSummary />
 
-        <div>
+        <div class="form-field">
             <label for="name">Name:</label>
             <InputText id="name" @bind-Value="registrationModel.Name" class="form-control" />
             <ValidationMessage For="@(() => registrationModel.Name)" />
         </div>
 
-        <div>
+        <div class="form-field">
             <label for="email">Email:</label>
             <InputText id="email" @bind-Value="registrationModel.Email" class="form-control" />
             <ValidationMessage For="@(() => registrationModel.Email)" />
         </div>
 
-        <div>
+        <div class="form-field">
             <label for="phone">Phone Number:</label>
             <InputText id="phone" @bind-Value="registrationModel.PhoneNumber" class="form-control" />
             <ValidationMessage For="@(() => registrationModel.PhoneNumber)" />
         </div>
 
-        <button type="submit" class="btn btn-primary">Register</button>
+        <button type="submit" class="btn btn-primary form-submit-btn" id="registration-submit-btn">Register</button>
     </EditForm>
-
-    @if (isRegistered)
-    {
-        <p class="text-success">Thank you for registering, @registrationModel.Name!</p>
-    }
 }
 
 @code {
@@ -46,6 +51,8 @@ else
     public int? eventId { get; set; }
 
     private RegistrationModel registrationModel = new RegistrationModel();
+    private bool isRegistered = false;
+    private bool hasAlreadyRegistered = false;
 
     protected override void OnParametersSet()
     {
@@ -55,14 +62,34 @@ else
         }
         else
         {
-            new RegistrationModel(DateTime.Now, eventId.HasValue ? eventId.Value : 0);
+            registrationModel = new RegistrationModel(DateTime.Now, eventId.HasValue ? eventId.Value : 0);
+        }
+
+        // Auto-fill the user's name if logged in
+        if (!string.IsNullOrEmpty(UserSessionService.UserName))
+        {
+            registrationModel.Name = UserSessionService.UserName;
+        }
+
+        // Check if the user has already registered for this event
+        if (eventId.HasValue && UserSessionService.GetData<HashSet<int>>("RegisteredEvents")?.Contains(eventId.Value) == true)
+        {
+            hasAlreadyRegistered = true;
         }
     }
-
-    private bool isRegistered = false;
 
     private void HandleValidSubmit()
     {
         isRegistered = true;
+
+        Console.WriteLine($"Registration successful for Event Id: {eventId}. Name: {registrationModel.Name}, Email: {registrationModel.Email}, Phone: {registrationModel.PhoneNumber}");
+
+        // Update user session data to track that the user has signed up for this event
+        var registeredEvents = UserSessionService.GetData<HashSet<int>>("RegisteredEvents") ?? new HashSet<int>();
+        if (eventId.HasValue) registeredEvents.Add(eventId.Value);
+        UserSessionService.SetData("RegisteredEvents", registeredEvents);
+
+        // Mark attendance for the event
+        if (eventId.HasValue) AttendanceService.MarkAttendance(eventId.Value, registrationModel.Name);
     }
 }

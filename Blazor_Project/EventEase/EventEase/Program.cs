@@ -1,5 +1,5 @@
-// using EventEase.Client.Pages;
 using EventEase.Components;
+using EventEase.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +7,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents()
     .AddInteractiveServerComponents();
+builder.Services.AddSingleton<UserSessionService>();
+builder.Services.AddSingleton<AttendanceService>();
 
 var app = builder.Build();
 
@@ -31,5 +33,8 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(EventEase.Client._Imports).Assembly);
+
+// Add this line to ensure the login page is accessible
+// app.MapFallbackToPage("/login");
 
 app.Run();
